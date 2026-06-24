@@ -59,13 +59,13 @@ function mostrarSeccion(id) {
 
 async function obtenerDenuncias() {
     if (!supabaseClient) return [];
-    const { data, error } = await supabaseClient.from('denuncias').select('*');
+    const { data, error } = await supabaseClient.from('denuncias').select('*').order('created_at', { ascending: false });
     if (error) {
         console.error("Error al obtener denuncias:", error);
         return [];
     }
     // Ordenar por fechaRegistro desc
-    data.sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
+    // Sorting is now handled by Supabase
     return data || [];
 }
 
