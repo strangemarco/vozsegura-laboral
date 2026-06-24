@@ -1,59 +1,17 @@
-<!DOCTYPE html>
-<html lang="es">
+const fs = require('fs');
 
-<head>
-    <meta charset="UTF-8">
-    <title>VozSegura Laboral</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+let html = fs.readFileSync('admin.html', 'utf8');
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+// Replace the <main> tag to make it fluid
+html = html.replace('<main class="container my-4">', '<main class="container-fluid px-5 my-4">');
 
-    <!-- CSS propio -->
-    <link rel="stylesheet" href="styles.css">
-</head>
+const adminStart = '<div id="panelAdmin" class="admin-wrapper">';
+const adminEnd = '</div>\\n\\n            </div>\\n        </section>';
+const startIndex = html.indexOf(adminStart);
+const endIndex = html.indexOf('</section>', startIndex);
 
-<body>
-
-    <nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="index.html">
-                <span class="brand-icon">
-                    <i class="bi bi-shield-lock-fill"></i>
-                </span>
-                <span>VozSegura Laboral</span>
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="menuPrincipal">
-                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Inicio</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="denuncia.html">Registrar denuncia</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="seguimiento.html">Seguimiento</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="btn btn-admin-nav text-decoration-none" href="login.html">Iniciar sesión</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container-fluid px-5 my-4">
-        <section id="admin" class="seccion">
-            
+if (startIndex > -1 && endIndex > -1) {
+    const newAdminContent = `
 <div id="panelAdmin">
     <div class="admin-dashboard-header">
         <div>
@@ -186,49 +144,11 @@
         </div>
     </div>
 </div>
-</section>
-    </main>
-
-    <!-- Modal resultado denuncia -->
-    <div class="modal fade" id="modalCodigo" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">Denuncia registrada</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-                    <p>Su denuncia fue registrada correctamente.</p>
-
-                    <div class="alert alert-warning">
-                        Guarde estos datos para consultar el seguimiento:
-                    </div>
-
-                    <h5>Código:</h5>
-                    <p class="codigo-generado" id="codigoGenerado"></p>
-
-                    <h5>PIN:</h5>
-                    <p class="codigo-generado" id="pinGenerado"></p>
-                </div>
-
-                <div class="modal-footer">
-                    <button class="btn btn-success" data-bs-dismiss="modal">Aceptar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="text-center py-4 text-muted">
-        <small>VozSegura Laboral - Prototipo académico</small>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script>
-
-
-</body>
-
-</html>
+`;
+    const before = html.substring(0, startIndex);
+    const after = html.substring(endIndex);
+    fs.writeFileSync('admin.html', before + newAdminContent + after);
+    console.log('Replaced admin layout successfully.');
+} else {
+    console.log('Could not find boundaries.');
+}
