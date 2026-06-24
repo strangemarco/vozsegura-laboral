@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>VozSegura Laboral - Detalle de Denuncia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- CSS propio -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="index.html">
+            <span class="brand-icon">
+                <i class="bi bi-shield-lock-fill"></i>
+            </span>
+            <span>VozSegura Laboral</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="denuncia.html">Registrar denuncia</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="seguimiento.html">Seguimiento</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-admin-nav text-decoration-none" href="login.html">Iniciar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Detalle de Denuncia</h2>
+            <p class="text-muted mb-0">Revisión exhaustiva y gestión de la denuncia seleccionada.</p>
+        </div>
+        <a href="admin.html" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Volver al panel
+        </a>
+    </div>
+
+    <!-- Contenedor donde se renderizará el detalle -->
+    <div id="detalleCasoAdmin"></div>
+</main>
+
+<!-- Modal Visualización Evidencia -->
+<div class="modal fade" id="modalEvidencia" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-dark text-white border-0">
+                <h5 class="modal-title" id="tituloEvidencia">Visualizador de Evidencia</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0 bg-light text-center" id="contenedorEvidencia" style="min-height: 400px; display: flex; align-items: center; justify-content: center;">
+                <!-- El contenido se inyecta por JS -->
+            </div>
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center py-4 text-muted mt-5 border-top">
+    <small>VozSegura Laboral - Prototipo académico</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

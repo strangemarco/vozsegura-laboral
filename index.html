@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>VozSegura Laboral</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- CSS propio -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="index.html">
+            <span class="brand-icon">
+                <i class="bi bi-shield-lock-fill"></i>
+            </span>
+            <span>VozSegura Laboral</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Inicio</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="denuncia.html">Registrar denuncia</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="seguimiento.html">Seguimiento</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="btn btn-admin-nav text-decoration-none" href="login.html">Iniciar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container my-4">
+
+    <!-- INICIO -->
+    <section id="inicio" class="seccion">
+
+    <!-- HERO PRINCIPAL -->
+    <div class="hero-modern shadow-sm">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <span class="badge-hero">
+                    <i class="bi bi-shield-check"></i>
+                    Canal confidencial de denuncias
+                </span>
+
+                <h1 class="hero-title mt-3">
+                    Un espacio seguro para reportar situaciones de acoso laboral
+                </h1>
+
+                <p class="hero-text mt-3">
+                    VozSegura Laboral permite registrar denuncias anónimas, adjuntar evidencias
+                    y consultar el avance del caso mediante un código de seguimiento, fortaleciendo
+                    la protección del trabajador y la gestión responsable dentro de la organización.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a href="denuncia.html" class="btn btn-hero-primary">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Realizar denuncia
+                    </a>
+
+                    <a href="seguimiento.html" class="btn btn-hero-secondary">
+                        <i class="bi bi-search me-2"></i>
+                        Consultar seguimiento
+                    </a>
+                </div>
+
+                <div class="hero-note mt-4">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    Prototipo académico orientado a la prevención, atención y seguimiento de casos.
+                </div>
+            </div>
+
+            <div class="col-lg-5 mt-5 mt-lg-0">
+                <div class="hero-illustration">
+                    <div class="phone-card">
+                        <div class="phone-header">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+
+                        <div class="phone-content">
+                            <div class="security-circle">
+                                <i class="bi bi-person-lock"></i>
+                            </div>
+
+                            <h5>Denuncia protegida</h5>
+                            <p>Tu identidad no será visible para usuarios no autorizados.</p>
+
+                            <div class="mini-status">
+                                <div>
+                                    <small>Código</small>
+                                    <strong>CASO-2026-0048</strong>
+                                </div>
+                                <span class="status-pill">Recibido</span>
+                            </div>
+
+                            <div class="mini-line"></div>
+                            <div class="mini-line short"></div>
+                        </div>
+                    </div>
+
+                    <div class="floating-card floating-card-one">
+                        <i class="bi bi-file-earmark-lock"></i>
+                        <span>Confidencial</span>
+                    </div>
+
+                    <div class="floating-card floating-card-two">
+                        <i class="bi bi-chat-dots"></i>
+                        <span>Buzón anónimo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BENEFICIOS -->
+    <div class="section-title text-center mt-5">
+        <span>Funciones principales</span>
+        <h2>¿Qué permite hacer el sistema?</h2>
+        <p>
+            El sistema está pensado para que la organización pueda actuar de forma ordenada,
+            confidencial y con seguimiento documentado.
+        </p>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4 mb-4">
+            <div class="feature-card h-100">
+                <div class="feature-icon">
+                    <i class="bi bi-incognito"></i>
+                </div>
+                <h5>Denuncias anónimas</h5>
+                <p>
+                    El trabajador puede registrar una denuncia sin exponer obligatoriamente
+                    sus datos personales.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card h-100">
+                <div class="feature-icon">
+                    <i class="bi bi-folder-check"></i>
+                </div>
+                <h5>Gestión de casos</h5>
+                <p>
+                    Recursos Humanos o el Comité de Ética pueden revisar, clasificar y actualizar
+                    el estado de cada denuncia.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card h-100">
+                <div class="feature-icon">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <h5>Reportes preventivos</h5>
+                <p>
+                    Permite visualizar estadísticas básicas para identificar áreas críticas
+                    y prevenir futuros casos.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROCESO -->
+    <div class="process-section mt-4">
+        <div class="row align-items-center">
+            <div class="col-lg-5 mb-4 mb-lg-0">
+                <span class="section-label">Proceso del sistema</span>
+                <h2>Seguimiento claro desde el registro hasta el cierre</h2>
+                <p>
+                    Cada denuncia pasa por estados definidos para evitar que los casos queden
+                    olvidados o sin respuesta.
+                </p>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="process-steps">
+                    <div class="process-step">
+                        <span>1</span>
+                        <div>
+                            <h6>Registro</h6>
+                            <p>El trabajador llena el formulario y adjunta evidencias.</p>
+                        </div>
+                    </div>
+
+                    <div class="process-step">
+                        <span>2</span>
+                        <div>
+                            <h6>Revisión</h6>
+                            <p>El comité analiza la información recibida y avanza el proceso.</p>
+                        </div>
+                    </div>
+
+                    <div class="process-step">
+                        <span>3</span>
+                        <div>
+                            <h6>Cierre</h6>
+                            <p>El caso finaliza con una conclusión documentada.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+    <!-- ADMIN -->
+    
+
+</main>
+
+<!-- Modal resultado denuncia -->
+<div class="modal fade" id="modalCodigo" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Denuncia registrada</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>Su denuncia fue registrada correctamente.</p>
+
+                <div class="alert alert-warning">
+                    Guarde estos datos para consultar el seguimiento:
+                </div>
+
+                <h5>Código:</h5>
+                <p class="codigo-generado" id="codigoGenerado"></p>
+
+                <h5>PIN:</h5>
+                <p class="codigo-generado" id="pinGenerado"></p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-success" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center py-4 text-muted">
+    <small>VozSegura Laboral - Prototipo académico</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="app.js"></script>
+
+
+</body>
+</html>
