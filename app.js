@@ -146,6 +146,8 @@ async function registrarDenuncia() {
         }
     }
 
+    btnSubmit.innerHTML = originalBtnHtml;
+    btnSubmit.disabled = false;
     mostrarToast("Denuncia registrada exitosamente.", "success");
     document.getElementById("codigoGenerado").textContent = codigo;
     document.getElementById("pinGenerado").textContent = pin;
