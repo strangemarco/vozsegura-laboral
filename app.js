@@ -1211,14 +1211,3 @@ function mostrarToast(mensaje, tipo = "success") {
     const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
     toast.show();
 }
-function obtenerBadgeEstadoNew(estado) {
-    if (estado === "En revisión") return '<span class="stat-pill pill-blue">En revisión</span>';
-    if (estado === "Cerrado") return '<span class="stat-pill pill-green">Cerrado</span>';
-    return '<span class="stat-pill pill-yellow">Recibido</span>';
-}
-
-function obtenerBadgeUrgenciaNew(urgencia) {
-    if (urgencia === "Alto") return '<span class="stat-pill pill-red">Alto</span>';
-    if (urgencia === "Medio") return '<span class="stat-pill pill-yellow">Medio</span>';
-    return '<span class="stat-pill pill-green">Bajo</span>';
-}
