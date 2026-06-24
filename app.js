@@ -534,7 +534,7 @@ async function enviarMensajeDenunciante(codigo, pin) {
 function loginAdmin() {
     const password = document.getElementById("passwordAdmin").value;
 
-    if (password === "123") {
+    if (password === "1311") {
         sessionStorage.setItem("adminAuth", "true");
         window.location.href = "admin.html";
     } else {
@@ -760,9 +760,10 @@ async function verDetalleAdmin(id) {
                     <div class="card-body">
                         <label class="form-label fw-bold text-secondary">Nuevo estado</label>
                         <select class="form-select mb-3" id="nuevoEstado">
-                            <option ${caso.estado === "Recibido" ? "selected" : ""}>Recibido</option>
-                            <option ${caso.estado === "En revisión" ? "selected" : ""}>En revisión</option>
-                            <option ${caso.estado === "Cerrado" ? "selected" : ""}>Cerrado</option>
+                            <option value="Recibido" ${caso.estado === 'Recibido' ? 'selected' : ''}>Recibido</option>
+                            <option value="En revisión" ${caso.estado === 'En revisión' ? 'selected' : ''}>En revisión</option>
+                            <option value="Con resolución" ${caso.estado === 'Con resolución' ? 'selected' : ''}>Con resolución</option>
+                            <option value="Cerrado" ${caso.estado === 'Cerrado' ? 'selected' : ''}>Cerrado</option>
                         </select>
 
                         <label class="form-label fw-bold text-secondary">Comentario interno</label>
@@ -942,6 +943,8 @@ function obtenerBadgeEstado(estado) {
             return `<span class="badge bg-primary px-3 py-2 rounded-pill"><i class="bi bi-inbox me-1"></i>${estado}</span>`;
         case "En revisión":
             return `<span class="badge bg-warning text-dark px-3 py-2 rounded-pill"><i class="bi bi-search me-1"></i>${estado}</span>`;
+        case "Con resolución":
+            return `<span class="badge bg-info text-dark px-3 py-2 rounded-pill"><i class="bi bi-bookmark-check me-1"></i>${estado}</span>`;
         case "Cerrado":
             return `<span class="badge bg-success px-3 py-2 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i>${estado}</span>`;
         default:
