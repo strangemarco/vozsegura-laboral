@@ -65,15 +65,9 @@ async function obtenerDenuncias() {
         return [];
     }
     
-    // Convertir la fecha "DD/MM/YYYY, HH:MM:SS a.m." a un objeto Date confiable
-    data.sort((a, b) => {
-        // Fallback: si no podemos parsear, invertimos el orden para que los últimos queden arriba
-        const fechaA = a.fechaRegistro ? new Date(a.fechaRegistro.replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/, '$2/$1/$3')) : new Date(0);
-        const fechaB = b.fechaRegistro ? new Date(b.fechaRegistro.replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/, '$2/$1/$3')) : new Date(0);
-        
-        return fechaB - fechaA;
-    });
-    
+    // Supabase retorna los registros cronológicamente por defecto
+    // Invertimos el arreglo para que los últimos registros creados aparezcan primero
+    data.reverse();
     return data || [];
 }
 
