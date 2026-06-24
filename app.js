@@ -1,7 +1,8 @@
-const STORAGE_KEY = "denunciasVozSegura";
-const MAX_FILE_MB = 3;
+const SUPABASE_URL = 'https://dypjzfkdlcpdnuveylwj.supabase.co';
+const SUPABASE_ANON_KEY = 'PEGAR_AQUI_EL_ANON_KEY';
+const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     if (document.getElementById("inicio")) {
         mostrarSeccion("inicio");
     }
@@ -11,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "login.html";
             return;
         }
-        cargarTablaAdmin();
+        await cargarTablaAdmin();
     }
 
     if (document.getElementById("detalleCasoAdmin")) {
@@ -21,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         const idActual = sessionStorage.getItem("casoAdminActual");
         if (idActual) {
-            verDetalleAdmin(parseInt(idActual));
+            await verDetalleAdmin(idActual);
         } else {
             window.location.href = "admin.html";
         }
@@ -55,13 +56,16 @@ function mostrarSeccion(id) {
     }
 }
 
-function obtenerDenuncias() {
-    const denuncias = localStorage.getItem(STORAGE_KEY);
-    return denuncias ? JSON.parse(denuncias) : [];
-}
-
-function guardarDenuncias(denuncias) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(denuncias));
+async function obtenerDenuncias() {
+    if(!supabase) return [];
+    const { data, error } = await supabase.from('denuncias').select('*');
+    if (error) {
+        console.error("Error al obtener denuncias:", error);
+        return [];
+    }
+    // Ordenar por fechaRegistro desc
+    data.sort((a,b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
+    return data || [];
 }
 
 function generarCodigo() {
@@ -89,12 +93,18 @@ async function registrarDenuncia() {
         return;
     }
 
-    let evidenciasProcesadas = [];
+    const btnSubmit = document.querySelector("#formDenuncia button[type='submit']");
+    const originalBtnHtml = btnSubmit.innerHTML;
+    btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...`;
+    btnSubmit.disabled = true;
 
+    let evidenciasProcesadas = [];
     try {
         evidenciasProcesadas = await procesarEvidencias();
     } catch (error) {
         mostrarToast(error.message, "error");
+        btnSubmit.innerHTML = originalBtnHtml;
+        btnSubmit.disabled = false;
         return;
     }
 
@@ -102,7 +112,6 @@ async function registrarDenuncia() {
     const pin = generarPin();
 
     const nuevaDenuncia = {
-        id: Date.now(),
         codigo: codigo,
         pin: pin,
         tipoDenuncia: tipoDenuncia,
@@ -122,21 +131,21 @@ async function registrarDenuncia() {
                 estado: "Recibido",
                 comentario: "La denuncia fue registrada en el sistema."
             }
-        ],
-        mensajesAnonimos: []
+        ]
     };
 
-    const denuncias = obtenerDenuncias();
-    denuncias.push(nuevaDenuncia);
-
-    try {
-        guardarDenuncias(denuncias);
-        mostrarToast("Denuncia registrada exitosamente.", "success");
-    } catch (error) {
-        mostrarToast("No se pudo guardar la denuncia. Archivos muy pesados.", "error");
-        return;
+    if (supabase) {
+        const { error } = await supabase.from('denuncias').insert([nuevaDenuncia]);
+        if (error) {
+            console.error("Error al guardar en Supabase:", error);
+            mostrarToast("Hubo un error al guardar la denuncia.", "error");
+            btnSubmit.innerHTML = originalBtnHtml;
+            btnSubmit.disabled = false;
+            return;
+        }
     }
 
+    mostrarToast("Denuncia registrada exitosamente.", "success");
     document.getElementById("codigoGenerado").textContent = codigo;
     document.getElementById("pinGenerado").textContent = pin;
 
@@ -219,45 +228,43 @@ function mostrarPreviewEvidencias() {
     });
 }
 
-function procesarEvidencias() {
+async function procesarEvidencias() {
     const input = document.getElementById("evidencias");
+    if (!input || input.files.length === 0) return [];
+    
     const archivos = Array.from(input.files);
+    const evidenciasSubidas = [];
 
-    if (archivos.length === 0) {
-        return Promise.resolve([]);
-    }
-
-    const promesas = archivos.map(archivo => {
+    for (let archivo of archivos) {
         const sizeMB = archivo.size / (1024 * 1024);
-
-        if (sizeMB > MAX_FILE_MB) {
-            return Promise.reject(
-                new Error(`El archivo "${archivo.name}" supera el límite de ${MAX_FILE_MB} MB para este prototipo.`)
-            );
+        if (sizeMB > 10) {
+            throw new Error(`El archivo "${archivo.name}" supera el límite de 10 MB.`);
         }
 
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
+        if (supabase) {
+            const fileExt = archivo.name.split('.').pop();
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+            
+            const { data, error } = await supabase.storage.from('evidencias').upload(fileName, archivo);
+            
+            if (error) {
+                console.error("Error subiendo evidencia:", error);
+                throw new Error(`No se pudo subir el archivo "${archivo.name}".`);
+            }
+            
+            const { data: publicUrlData } = supabase.storage.from('evidencias').getPublicUrl(fileName);
+            
+            evidenciasSubidas.push({
+                nombre: archivo.name,
+                tipo: archivo.type || "application/octet-stream",
+                tamano: archivo.size,
+                url: publicUrlData.publicUrl,
+                categoria: obtenerCategoriaArchivo(archivo.type, archivo.name)
+            });
+        }
+    }
 
-            reader.onload = () => {
-                resolve({
-                    nombre: archivo.name,
-                    tipo: archivo.type || "application/octet-stream",
-                    tamano: archivo.size,
-                    dataUrl: reader.result,
-                    categoria: obtenerCategoriaArchivo(archivo.type, archivo.name)
-                });
-            };
-
-            reader.onerror = () => {
-                reject(new Error(`No se pudo leer el archivo "${archivo.name}".`));
-            };
-
-            reader.readAsDataURL(archivo);
-        });
-    });
-
-    return Promise.all(promesas);
+    return evidenciasSubidas;
 }
 
 function obtenerCategoriaArchivo(tipo, nombre) {
@@ -387,7 +394,7 @@ function renderizarEvidencias(evidencias) {
     `;
 }
 
-function consultarCaso() {
+async function consultarCaso() {
     const codigo = document.getElementById("codigoConsulta").value.trim();
     const pin = document.getElementById("pinConsulta").value.trim();
     const resultado = document.getElementById("resultadoSeguimiento");
@@ -397,7 +404,7 @@ function consultarCaso() {
         return;
     }
 
-    const denuncias = obtenerDenuncias();
+    const denuncias = await obtenerDenuncias();
     const caso = denuncias.find(d => d.codigo === codigo && d.pin === pin);
 
     if (!caso) {
@@ -493,7 +500,7 @@ function consultarCaso() {
     `;
 }
 
-function enviarMensajeDenunciante(codigo, pin) {
+async function enviarMensajeDenunciante(codigo, pin) {
     const mensaje = document.getElementById("respuestaAnonima").value.trim();
 
     if (!mensaje) {
@@ -501,7 +508,7 @@ function enviarMensajeDenunciante(codigo, pin) {
         return;
     }
 
-    const denuncias = obtenerDenuncias();
+    const denuncias = await obtenerDenuncias();
     const index = denuncias.findIndex(d => d.codigo === codigo && d.pin === pin);
 
     if (index === -1) {
@@ -515,10 +522,9 @@ function enviarMensajeDenunciante(codigo, pin) {
         fecha: new Date().toLocaleString()
     });
 
-    guardarDenuncias(denuncias);
-
+    if(supabase) await supabase.from('denuncias').update({ mensajesAnonimos: denuncias[index].mensajesAnonimos }).eq('id', denuncias[index].id);
     mostrarToast("Mensaje enviado correctamente.", "success");
-    consultarCaso();
+    await consultarCaso();
 }
 
 function loginAdmin() {
@@ -539,7 +545,7 @@ function cerrarSesionAdmin() {
 
 function cargarDashboard(denuncias) {
     if (!document.getElementById("totalCasos")) return;
-    if (!denuncias) denuncias = obtenerDenuncias();
+    if (!denuncias) denuncias = await obtenerDenuncias();
 
     document.getElementById("totalCasos").textContent = denuncias.length;
     if (document.getElementById("casosRecibidos")) document.getElementById("casosRecibidos").textContent = denuncias.filter(d => d.estado === "Recibido").length;
@@ -555,7 +561,7 @@ function cargarDashboard(denuncias) {
 let paginaActualAdmin = 1;
 const CASOS_POR_PAGINA = 10;
 
-function cargarTablaAdmin(resetPage = false) {
+async function cargarTablaAdmin(resetPage = false) {
     if (resetPage === true || typeof resetPage === 'number') {
         paginaActualAdmin = typeof resetPage === 'number' ? resetPage : 1;
     }
@@ -567,7 +573,7 @@ function cargarTablaAdmin(resetPage = false) {
     const filtroEstado = document.getElementById("filtroEstado") ? document.getElementById("filtroEstado").value : "";
     const filtroUrgencia = document.getElementById("filtroUrgencia") ? document.getElementById("filtroUrgencia").value : "";
 
-    let denuncias = obtenerDenuncias();
+    let denuncias = await obtenerDenuncias();
 
     if (buscador) {
         denuncias = denuncias.filter(d => 
@@ -660,8 +666,8 @@ function irDetalleAdmin(id) {
     window.location.href = "admin_detalle.html";
 }
 
-function verDetalleAdmin(id) {
-    const denuncias = obtenerDenuncias();
+async function verDetalleAdmin(id) {
+    const denuncias = await obtenerDenuncias();
     const caso = denuncias.find(d => d.id === id);
 
     if (!caso) {
@@ -828,7 +834,7 @@ function renderizarEvidenciasAdmin(evidencias, idCaso) {
 }
 
 function abrirEvidenciaAdmin(idCaso, indexEvidencia) {
-    const denuncias = obtenerDenuncias();
+    const denuncias = await obtenerDenuncias();
     const caso = denuncias.find(d => d.id === idCaso);
     if (!caso || !caso.evidencias || !caso.evidencias[indexEvidencia]) return;
 
@@ -859,7 +865,7 @@ function abrirEvidenciaAdmin(idCaso, indexEvidencia) {
 }
 
 function actualizarEstadoCaso(id) {
-    const denuncias = obtenerDenuncias();
+    const denuncias = await obtenerDenuncias();
     const index = denuncias.findIndex(d => d.id === id);
 
     if (index === -1) {
@@ -896,7 +902,7 @@ function enviarMensajeComite(id) {
         return;
     }
 
-    const denuncias = obtenerDenuncias();
+    const denuncias = await obtenerDenuncias();
     const index = denuncias.findIndex(d => d.id === id);
 
     if (index === -1) {
@@ -916,11 +922,9 @@ function enviarMensajeComite(id) {
         comentario: "El comité envió un mensaje al denunciante."
     });
 
-    guardarDenuncias(denuncias);
-
+    if(supabase) await supabase.from('denuncias').update({ mensajesAnonimos: denuncias[index].mensajesAnonimos, historial: denuncias[index].historial }).eq('id', id);
     mostrarToast("Mensaje enviado correctamente.", "success");
-
-    verDetalleAdmin(id);
+    await verDetalleAdmin(id);
 }
 
 function obtenerBadgeEstado(estado) {
@@ -984,8 +988,8 @@ function renderizarGraficos(denuncias) {
     chartUrgenciaInstance = new Chart(document.getElementById("chartUrgencia"), createConfig(urgenciaData, 'doughnut'));
 }
 
-async function exportarExcel() {
-    const denuncias = obtenerDenuncias();
+async async function exportarExcel() {
+    const denuncias = await obtenerDenuncias();
     if (denuncias.length === 0) {
         mostrarToast("No hay datos para exportar.", "warning");
         return;
