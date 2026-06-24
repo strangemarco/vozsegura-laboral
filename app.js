@@ -59,13 +59,21 @@ function mostrarSeccion(id) {
 
 async function obtenerDenuncias() {
     if (!supabaseClient) return [];
-    const { data, error } = await supabaseClient.from('denuncias').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabaseClient.from('denuncias').select('*');
     if (error) {
         console.error("Error al obtener denuncias:", error);
         return [];
     }
-    // Ordenar por fechaRegistro desc
-    // Sorting is now handled by Supabase
+    
+    // Convertir la fecha "DD/MM/YYYY, HH:MM:SS a.m." a un objeto Date confiable
+    data.sort((a, b) => {
+        // Fallback: si no podemos parsear, invertimos el orden para que los últimos queden arriba
+        const fechaA = a.fechaRegistro ? new Date(a.fechaRegistro.replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/, '$2/$1/$3')) : new Date(0);
+        const fechaB = b.fechaRegistro ? new Date(b.fechaRegistro.replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/, '$2/$1/$3')) : new Date(0);
+        
+        return fechaB - fechaA;
+    });
+    
     return data || [];
 }
 
