@@ -477,6 +477,18 @@ textarea {
     .process-section {
         padding: 28px;
     }
+    
+    .report-card, .side-info-card, .form-header-section {
+        padding: 20px;
+    }
+
+    .admin-main-header, .admin-stat-card, .admin-chart-card, .admin-table-card, .admin-detail-card {
+        padding: 16px;
+    }
+
+    .admin-evidence-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* FORMULARIO DE DENUNCIA MODERNO */
