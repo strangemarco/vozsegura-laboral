@@ -1,3 +1,4 @@
+const MAX_FILE_MB = 10;
 const SUPABASE_URL = 'https://dypjzfkdlcpdnuveylwj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5cGp6ZmtkbGNwZG51dmV5bHdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyOTU1NTksImV4cCI6MjA5Nzg3MTU1OX0.aoyeufcSIRVH-bSRALBC3XaQJle2jmojqOpj5OOfra0';
 const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
