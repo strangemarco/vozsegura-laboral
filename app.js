@@ -884,7 +884,12 @@ async function actualizarEstadoCaso(id) {
         comentario: comentario || "El estado del caso fue actualizado."
     });
 
-    guardarDenuncias(denuncias);
+    if (supabaseClient) {
+        await supabaseClient.from('denuncias').update({
+            estado: nuevoEstado,
+            historial: denuncias[index].historial
+        }).eq('id', id);
+    }
 
     mostrarToast("Caso actualizado correctamente.", "success");
 
