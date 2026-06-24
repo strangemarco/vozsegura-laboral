@@ -345,25 +345,25 @@ function renderizarEvidencias(evidencias) {
         if (evidencia.categoria === "imagen") {
             preview = `
                         <div class="admin-evidence-preview">
-                            <img src="${evidencia.dataUrl}" alt="${evidencia.nombre}">
+                            <img src="${(evidencia.url || evidencia.dataUrl)}" alt="${evidencia.nombre}">
                         </div>
                     `;
         } else if (evidencia.categoria === "video") {
             preview = `
                         <div class="admin-evidence-preview">
-                            <video src="${evidencia.dataUrl}" controls></video>
+                            <video src="${(evidencia.url || evidencia.dataUrl)}" controls></video>
                         </div>
                     `;
         } else if (evidencia.categoria === "audio") {
             preview = `
                         <div class="admin-evidence-preview">
-                            <audio src="${evidencia.dataUrl}" controls></audio>
+                            <audio src="${(evidencia.url || evidencia.dataUrl)}" controls></audio>
                         </div>
                     `;
         } else if (evidencia.categoria === "pdf") {
             preview = `
                         <div class="admin-evidence-preview">
-                            <iframe src="${evidencia.dataUrl}" width="100%" height="180"></iframe>
+                            <iframe src="${(evidencia.url || evidencia.dataUrl)}" width="100%" height="180"></iframe>
                         </div>
                     `;
         } else {
@@ -380,7 +380,7 @@ function renderizarEvidencias(evidencias) {
                         <strong>${evidencia.nombre}</strong>
                         <small>${formatearTamano(evidencia.tamano)}</small>
 
-                        <a href="${evidencia.dataUrl}"
+                        <a href="${(evidencia.url || evidencia.dataUrl)}"
                            target="_blank"
                            download="${evidencia.nombre}"
                            class="btn btn-sm btn-outline-primary w-100 mt-2">
@@ -627,7 +627,7 @@ async function cargarTablaAdmin(resetPage = false) {
             <td>${obtenerBadgeEstado(d.estado)}</td>
             <td>${d.fechaRegistro}</td>
             <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="irDetalleAdmin(${d.id})" title="Ver detalle">
+                <button class="btn btn-sm btn-outline-primary" onclick="irDetalleAdmin('${d.id}')" title="Ver detalle">
                     <i class="bi bi-eye"></i>
                 </button>
             </td>
@@ -764,7 +764,7 @@ async function verDetalleAdmin(id) {
                         <label class="form-label fw-bold text-secondary">Comentario interno</label>
                         <textarea class="form-control mb-3" id="comentarioEstado" rows="2" placeholder="Ej: Caso derivado al Comité..."></textarea>
 
-                        <button class="btn btn-success w-100 fw-bold" onclick="actualizarEstadoCaso(${caso.id})">
+                        <button class="btn btn-success w-100 fw-bold" onclick="actualizarEstadoCaso('${caso.id}')">
                             <i class="bi bi-check-circle me-2"></i>Guardar Cambios
                         </button>
                     </div>
@@ -782,7 +782,7 @@ async function verDetalleAdmin(id) {
                         <div class="border-top pt-3">
                             <label class="form-label fw-bold text-secondary small">Enviar mensaje al denunciante</label>
                             <textarea class="form-control mb-2" id="mensajeComite" rows="2" placeholder="Solicitar más información..."></textarea>
-                            <button class="btn btn-info text-white w-100 fw-bold" onclick="enviarMensajeComite(${caso.id})">
+                            <button class="btn btn-info text-white w-100 fw-bold" onclick="enviarMensajeComite('${caso.id}')">
                                 <i class="bi bi-send-fill me-2"></i>Enviar Mensaje
                             </button>
                         </div>
@@ -823,7 +823,7 @@ function renderizarEvidenciasAdmin(evidencias, idCaso) {
                             <strong class="mt-2 d-block text-truncate" title="${evidencia.nombre}">${evidencia.nombre}</strong>
                             <small class="text-muted">${formatearTamano(evidencia.tamano)}</small>
                         </div>
-                        <button class="btn btn-sm btn-outline-primary mt-3 w-100" onclick="abrirEvidenciaAdmin(${idCaso}, ${index})">
+                        <button class="btn btn-sm btn-outline-primary mt-3 w-100" onclick="abrirEvidenciaAdmin('${idCaso}', ${index})">
                             <i class="bi bi-eye me-1"></i>Ver Evidencia
                         </button>
                     </div>
@@ -845,20 +845,20 @@ async function abrirEvidenciaAdmin(idCaso, indexEvidencia) {
         const contenedor = document.getElementById("contenedorEvidencia");
 
         if (evidencia.categoria === "imagen") {
-            contenedor.innerHTML = `<img src="${evidencia.dataUrl}" style="max-width: 100%; max-height: 80vh; object-fit: contain;">`;
+            contenedor.innerHTML = `<img src="${(evidencia.url || evidencia.dataUrl)}" style="max-width: 100%; max-height: 80vh; object-fit: contain;">`;
         } else if (evidencia.categoria === "pdf") {
-            contenedor.innerHTML = `<iframe src="${evidencia.dataUrl}" style="width: 100%; height: 80vh; border: none;"></iframe>`;
+            contenedor.innerHTML = `<iframe src="${(evidencia.url || evidencia.dataUrl)}" style="width: 100%; height: 80vh; border: none;"></iframe>`;
         } else if (evidencia.categoria === "video") {
-            contenedor.innerHTML = `<video src="${evidencia.dataUrl}" controls style="max-width: 100%; max-height: 80vh;"></video>`;
+            contenedor.innerHTML = `<video src="${(evidencia.url || evidencia.dataUrl)}" controls style="max-width: 100%; max-height: 80vh;"></video>`;
         } else if (evidencia.categoria === "audio") {
-            contenedor.innerHTML = `<div class="p-5 bg-white rounded"><i class="bi bi-file-music fs-1 text-primary d-block mb-3"></i><audio src="${evidencia.dataUrl}" controls></audio></div>`;
+            contenedor.innerHTML = `<div class="p-5 bg-white rounded"><i class="bi bi-file-music fs-1 text-primary d-block mb-3"></i><audio src="${(evidencia.url || evidencia.dataUrl)}" controls></audio></div>`;
         }
 
         const modal = new bootstrap.Modal(document.getElementById("modalEvidencia"));
         modal.show();
     } else {
         const a = document.createElement("a");
-        a.href = evidencia.dataUrl;
+        a.href = (evidencia.url || evidencia.dataUrl);
         a.download = evidencia.nombre;
         a.click();
     }
