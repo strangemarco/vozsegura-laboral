@@ -1,5 +1,5 @@
 const SUPABASE_URL = 'https://dypjzfkdlcpdnuveylwj.supabase.co';
-const SUPABASE_ANON_KEY = 'PEGAR_AQUI_EL_ANON_KEY';
+const SUPABASE_ANON_KEY = 'https://supabase.com/dashboard/project/dypjzfkdlcpdnuveylwj/integrations/data_api/overview';
 const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -57,14 +57,14 @@ function mostrarSeccion(id) {
 }
 
 async function obtenerDenuncias() {
-    if(!supabase) return [];
+    if (!supabase) return [];
     const { data, error } = await supabase.from('denuncias').select('*');
     if (error) {
         console.error("Error al obtener denuncias:", error);
         return [];
     }
     // Ordenar por fechaRegistro desc
-    data.sort((a,b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
+    data.sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
     return data || [];
 }
 
@@ -215,11 +215,10 @@ function mostrarPreviewEvidencias() {
                 <div class="preview-info">
                     <strong>${archivo.name}</strong>
                     <small>${formatearTamano(archivo.size)}</small>
-                    ${
-                        sizeMB > MAX_FILE_MB
-                            ? `<small class="text-danger d-block">Archivo demasiado pesado para este prototipo.</small>`
-                            : ""
-                    }
+                    ${sizeMB > MAX_FILE_MB
+                ? `<small class="text-danger d-block">Archivo demasiado pesado para este prototipo.</small>`
+                : ""
+            }
                 </div>
             </div>
         `;
@@ -231,7 +230,7 @@ function mostrarPreviewEvidencias() {
 async function procesarEvidencias() {
     const input = document.getElementById("evidencias");
     if (!input || input.files.length === 0) return [];
-    
+
     const archivos = Array.from(input.files);
     const evidenciasSubidas = [];
 
@@ -244,16 +243,16 @@ async function procesarEvidencias() {
         if (supabase) {
             const fileExt = archivo.name.split('.').pop();
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-            
+
             const { data, error } = await supabase.storage.from('evidencias').upload(fileName, archivo);
-            
+
             if (error) {
                 console.error("Error subiendo evidencia:", error);
                 throw new Error(`No se pudo subir el archivo "${archivo.name}".`);
             }
-            
+
             const { data: publicUrlData } = supabase.storage.from('evidencias').getPublicUrl(fileName);
-            
+
             evidenciasSubidas.push({
                 nombre: archivo.name,
                 tipo: archivo.type || "application/octet-stream",
@@ -328,8 +327,8 @@ function renderizarEvidencias(evidencias) {
     return `
         <div class="admin-evidence-grid">
             ${evidencias.map(evidencia => {
-                if (typeof evidencia === "string") {
-                    return `
+        if (typeof evidencia === "string") {
+            return `
                         <div class="admin-evidence-card">
                             <div class="admin-evidence-preview">
                                 <i class="bi bi-file-earmark-fill"></i>
@@ -338,43 +337,43 @@ function renderizarEvidencias(evidencias) {
                             <small>Archivo registrado anteriormente.</small>
                         </div>
                     `;
-                }
+        }
 
-                let preview = "";
+        let preview = "";
 
-                if (evidencia.categoria === "imagen") {
-                    preview = `
+        if (evidencia.categoria === "imagen") {
+            preview = `
                         <div class="admin-evidence-preview">
                             <img src="${evidencia.dataUrl}" alt="${evidencia.nombre}">
                         </div>
                     `;
-                } else if (evidencia.categoria === "video") {
-                    preview = `
+        } else if (evidencia.categoria === "video") {
+            preview = `
                         <div class="admin-evidence-preview">
                             <video src="${evidencia.dataUrl}" controls></video>
                         </div>
                     `;
-                } else if (evidencia.categoria === "audio") {
-                    preview = `
+        } else if (evidencia.categoria === "audio") {
+            preview = `
                         <div class="admin-evidence-preview">
                             <audio src="${evidencia.dataUrl}" controls></audio>
                         </div>
                     `;
-                } else if (evidencia.categoria === "pdf") {
-                    preview = `
+        } else if (evidencia.categoria === "pdf") {
+            preview = `
                         <div class="admin-evidence-preview">
                             <iframe src="${evidencia.dataUrl}" width="100%" height="180"></iframe>
                         </div>
                     `;
-                } else {
-                    preview = `
+        } else {
+            preview = `
                         <div class="admin-evidence-preview">
                             <i class="${obtenerIconoArchivo(evidencia.tipo, evidencia.nombre)}"></i>
                         </div>
                     `;
-                }
+        }
 
-                return `
+        return `
                     <div class="admin-evidence-card">
                         ${preview}
                         <strong>${evidencia.nombre}</strong>
@@ -389,7 +388,7 @@ function renderizarEvidencias(evidencias) {
                         </a>
                     </div>
                 `;
-            }).join("")}
+    }).join("")}
         </div>
     `;
 }
@@ -522,7 +521,7 @@ async function enviarMensajeDenunciante(codigo, pin) {
         fecha: new Date().toLocaleString()
     });
 
-    if(supabase) await supabase.from('denuncias').update({ mensajesAnonimos: denuncias[index].mensajesAnonimos }).eq('id', denuncias[index].id);
+    if (supabase) await supabase.from('denuncias').update({ mensajesAnonimos: denuncias[index].mensajesAnonimos }).eq('id', denuncias[index].id);
     mostrarToast("Mensaje enviado correctamente.", "success");
     await consultarCaso();
 }
@@ -543,7 +542,7 @@ function cerrarSesionAdmin() {
     window.location.href = "login.html";
 }
 
-function cargarDashboard(denuncias) {
+async function cargarDashboard(denuncias) {
     if (!document.getElementById("totalCasos")) return;
     if (!denuncias) denuncias = await obtenerDenuncias();
 
@@ -576,9 +575,9 @@ async function cargarTablaAdmin(resetPage = false) {
     let denuncias = await obtenerDenuncias();
 
     if (buscador) {
-        denuncias = denuncias.filter(d => 
-            d.codigo.toLowerCase().includes(buscador) || 
-            (d.area && d.area.toLowerCase().includes(buscador)) || 
+        denuncias = denuncias.filter(d =>
+            d.codigo.toLowerCase().includes(buscador) ||
+            (d.area && d.area.toLowerCase().includes(buscador)) ||
             (d.tipoDenuncia && d.tipoDenuncia.toLowerCase().includes(buscador))
         );
     }
@@ -801,22 +800,22 @@ function renderizarEvidenciasAdmin(evidencias, idCaso) {
     return `
         <div class="admin-evidence-grid">
             ${evidencias.map((evidencia, index) => {
-                if (typeof evidencia === "string") {
-                    return `
+        if (typeof evidencia === "string") {
+            return `
                         <div class="admin-evidence-card p-3 text-center border rounded bg-light">
                             <i class="bi bi-file-earmark-fill fs-1 text-primary"></i>
                             <strong class="mt-2 d-block text-truncate" title="${evidencia}">${evidencia}</strong>
                         </div>
                     `;
-                }
+        }
 
-                let previewIcon = "bi-file-earmark-fill";
-                if (evidencia.categoria === "imagen") previewIcon = "bi-image";
-                if (evidencia.categoria === "video") previewIcon = "bi-film";
-                if (evidencia.categoria === "audio") previewIcon = "bi-file-music";
-                if (evidencia.categoria === "pdf") previewIcon = "bi-file-pdf";
+        let previewIcon = "bi-file-earmark-fill";
+        if (evidencia.categoria === "imagen") previewIcon = "bi-image";
+        if (evidencia.categoria === "video") previewIcon = "bi-film";
+        if (evidencia.categoria === "audio") previewIcon = "bi-file-music";
+        if (evidencia.categoria === "pdf") previewIcon = "bi-file-pdf";
 
-                return `
+        return `
                     <div class="admin-evidence-card p-3 text-center border rounded bg-light d-flex flex-column justify-content-between h-100">
                         <div>
                             <i class="bi ${previewIcon} fs-1 text-primary"></i>
@@ -828,22 +827,22 @@ function renderizarEvidenciasAdmin(evidencias, idCaso) {
                         </button>
                     </div>
                 `;
-            }).join("")}
+    }).join("")}
         </div>
     `;
 }
 
-function abrirEvidenciaAdmin(idCaso, indexEvidencia) {
+async function abrirEvidenciaAdmin(idCaso, indexEvidencia) {
     const denuncias = await obtenerDenuncias();
     const caso = denuncias.find(d => d.id === idCaso);
     if (!caso || !caso.evidencias || !caso.evidencias[indexEvidencia]) return;
 
     const evidencia = caso.evidencias[indexEvidencia];
-    
+
     if (evidencia.categoria === "imagen" || evidencia.categoria === "pdf" || evidencia.categoria === "video" || evidencia.categoria === "audio") {
         document.getElementById("tituloEvidencia").textContent = evidencia.nombre;
         const contenedor = document.getElementById("contenedorEvidencia");
-        
+
         if (evidencia.categoria === "imagen") {
             contenedor.innerHTML = `<img src="${evidencia.dataUrl}" style="max-width: 100%; max-height: 80vh; object-fit: contain;">`;
         } else if (evidencia.categoria === "pdf") {
@@ -864,7 +863,7 @@ function abrirEvidenciaAdmin(idCaso, indexEvidencia) {
     }
 }
 
-function actualizarEstadoCaso(id) {
+async function actualizarEstadoCaso(id) {
     const denuncias = await obtenerDenuncias();
     const index = denuncias.findIndex(d => d.id === id);
 
@@ -894,7 +893,7 @@ function actualizarEstadoCaso(id) {
     verDetalleAdmin(id);
 }
 
-function enviarMensajeComite(id) {
+async function enviarMensajeComite(id) {
     const mensaje = document.getElementById("mensajeComite").value.trim();
 
     if (!mensaje) {
@@ -922,7 +921,7 @@ function enviarMensajeComite(id) {
         comentario: "El comité envió un mensaje al denunciante."
     });
 
-    if(supabase) await supabase.from('denuncias').update({ mensajesAnonimos: denuncias[index].mensajesAnonimos, historial: denuncias[index].historial }).eq('id', id);
+    if (supabase) await supabase.from('denuncias').update({ mensajesAnonimos: denuncias[index].mensajesAnonimos, historial: denuncias[index].historial }).eq('id', id);
     mostrarToast("Mensaje enviado correctamente.", "success");
     await verDetalleAdmin(id);
 }
@@ -988,7 +987,7 @@ function renderizarGraficos(denuncias) {
     chartUrgenciaInstance = new Chart(document.getElementById("chartUrgencia"), createConfig(urgenciaData, 'doughnut'));
 }
 
-async async function exportarExcel() {
+async function exportarExcel() {
     const denuncias = await obtenerDenuncias();
     if (denuncias.length === 0) {
         mostrarToast("No hay datos para exportar.", "warning");
@@ -1073,9 +1072,9 @@ function copiarCredenciales() {
 function imprimirCredenciales() {
     const codigo = document.getElementById("codigoGenerado").textContent;
     const pin = document.getElementById("pinGenerado").textContent;
-    
+
     const ventanaImpresion = window.open('', '_blank', 'height=600,width=800');
-    
+
     if (!ventanaImpresion) {
         mostrarToast("Su navegador bloqueó la ventana emergente. Permita las ventanas emergentes para poder imprimir.", "warning");
         return;
@@ -1176,7 +1175,7 @@ function mostrarToast(mensaje, tipo = "success") {
 
     const toastMessage = document.getElementById("toastMessage");
     toastMessage.textContent = mensaje;
-    
+
     toastEl.classList.remove("bg-primary", "bg-success", "bg-danger", "bg-warning", "text-white", "text-dark");
     if (tipo === "success") {
         toastEl.classList.add("bg-success", "text-white");
@@ -1189,7 +1188,7 @@ function mostrarToast(mensaje, tipo = "success") {
         toastEl.classList.add("bg-primary", "text-white");
     }
 
-    if(tipo !== "warning") {
+    if (tipo !== "warning") {
         toastEl.querySelector('.btn-close').classList.add('btn-close-white');
     }
 
