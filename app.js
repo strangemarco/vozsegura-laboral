@@ -1,6 +1,6 @@
 const SUPABASE_URL = 'https://dypjzfkdlcpdnuveylwj.supabase.co';
-const SUPABASE_ANON_KEY = 'https://supabase.com/dashboard/project/dypjzfkdlcpdnuveylwj/integrations/data_api/overview';
-const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5cGp6ZmtkbGNwZG51dmV5bHdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyOTU1NTksImV4cCI6MjA5Nzg3MTU1OX0.aoyeufcSIRVH-bSRALBC3XaQJle2jmojqOpj5OOfra0';
+const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 document.addEventListener("DOMContentLoaded", async () => {
     if (document.getElementById("inicio")) {
@@ -57,8 +57,8 @@ function mostrarSeccion(id) {
 }
 
 async function obtenerDenuncias() {
-    if (!supabase) return [];
-    const { data, error } = await supabase.from('denuncias').select('*');
+    if (!supabaseClient) return [];
+    const { data, error } = await supabaseClient.from('denuncias').select('*');
     if (error) {
         console.error("Error al obtener denuncias:", error);
         return [];
@@ -134,8 +134,8 @@ async function registrarDenuncia() {
         ]
     };
 
-    if (supabase) {
-        const { error } = await supabase.from('denuncias').insert([nuevaDenuncia]);
+    if (supabaseClient) {
+        const { error } = await supabaseClient.from('denuncias').insert([nuevaDenuncia]);
         if (error) {
             console.error("Error al guardar en Supabase:", error);
             mostrarToast("Hubo un error al guardar la denuncia.", "error");
@@ -240,18 +240,18 @@ async function procesarEvidencias() {
             throw new Error(`El archivo "${archivo.name}" supera el límite de 10 MB.`);
         }
 
-        if (supabase) {
+        if (supabaseClient) {
             const fileExt = archivo.name.split('.').pop();
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
-            const { data, error } = await supabase.storage.from('evidencias').upload(fileName, archivo);
+            const { data, error } = await supabaseClient.storage.from('evidencias').upload(fileName, archivo);
 
             if (error) {
                 console.error("Error subiendo evidencia:", error);
                 throw new Error(`No se pudo subir el archivo "${archivo.name}".`);
             }
 
-            const { data: publicUrlData } = supabase.storage.from('evidencias').getPublicUrl(fileName);
+            const { data: publicUrlData } = supabaseClient.storage.from('evidencias').getPublicUrl(fileName);
 
             evidenciasSubidas.push({
                 nombre: archivo.name,
@@ -521,7 +521,7 @@ async function enviarMensajeDenunciante(codigo, pin) {
         fecha: new Date().toLocaleString()
     });
 
-    if (supabase) await supabase.from('denuncias').update({ mensajesAnonimos: denuncias[index].mensajesAnonimos }).eq('id', denuncias[index].id);
+    if (supabaseClient) await supabaseClient.from('denuncias').update({ mensajesAnonimos: denuncias[index].mensajesAnonimos }).eq('id', denuncias[index].id);
     mostrarToast("Mensaje enviado correctamente.", "success");
     await consultarCaso();
 }
@@ -921,7 +921,7 @@ async function enviarMensajeComite(id) {
         comentario: "El comité envió un mensaje al denunciante."
     });
 
-    if (supabase) await supabase.from('denuncias').update({ mensajesAnonimos: denuncias[index].mensajesAnonimos, historial: denuncias[index].historial }).eq('id', id);
+    if (supabaseClient) await supabaseClient.from('denuncias').update({ mensajesAnonimos: denuncias[index].mensajesAnonimos, historial: denuncias[index].historial }).eq('id', id);
     mostrarToast("Mensaje enviado correctamente.", "success");
     await verDetalleAdmin(id);
 }
